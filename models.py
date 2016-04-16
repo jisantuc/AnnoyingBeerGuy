@@ -70,3 +70,9 @@ class Alert(Base):
                      'created': dt.datetime.today()})
         )
         session.close()
+
+class Order(Base):
+
+    __tablename__ = 'orders'
+
+    uid = Column(Integer, ForeignKey('user.uid'))
