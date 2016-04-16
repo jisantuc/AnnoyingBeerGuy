@@ -1,4 +1,3 @@
-
 import re
 
 def validate_email_address(email_address):

@@ -2,3 +2,4 @@ pytest
 requests[security]
 sqlalchemy
 flask
+flask-cors
