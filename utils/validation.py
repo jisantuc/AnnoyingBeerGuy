@@ -13,4 +13,4 @@ def validate_delivery_request(request):
     assert request['address']
 
 def validate_beer_request(request):
-    pass
+    assert 'name' in request or 'abv' in request or 'ibv' in request or 'srmId' in request or 'availabilityId' in request or 'styleId' in request

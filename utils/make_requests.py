@@ -4,15 +4,12 @@ import datetime as dt
 import urllib
 from validation import validate_beer_request, validate_delivery_request
 
-def create_brewerydb_query(uid, **kwargs):
+def create_brewerydb_query(request):
+    validate_beer_request(request)
 
-    kwargs[key] = API_KEY
-    base = 'http://api.brewerydb.com/v2/beer/'
-    append = '&'.join(
-        ['{}={}'.format(k, v) for k, v in kwargs.items()]
-    )
-
-    return base + append
+    base = 'http://api.brewerydb.com/v2/beers/'
+    request.update({'key': os.environ['API_KEY']})
+    return requests.get(base, params=request).json()
 
 def make_delivery_request(request):
     base = (
