@@ -3,3 +3,4 @@ requests[security]
 sqlalchemy
 flask
 flask-cors
+Flask==0.10.1
