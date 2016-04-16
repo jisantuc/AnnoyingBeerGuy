@@ -6,15 +6,18 @@ import json
 from validation import validate_beer_request, validate_delivery_request
 
 def create_brewerydb_query(request):
-    validate_beer_request(request)
+    req = dict(request.values.items())
+    validate_beer_request(req)
+    base = 'http://api.brewerydb.com/v2/beers'
+    req.update({'key': os.environ['API_KEY']})
+    response = requests.get(base, params=req).json()
+    with open('breweryresponse.txt', 'w') as outf:
+        outf.write(json.dumps(response))
 
-    base = 'http://api.brewerydb.com/v2/beers/'
-    request.update({'key': os.environ['API_KEY']})
-    response = requests.get(base, params=request).json()
+    beer_names = [
+        d['name'] for d in response['data']
+    ] if 'data' in response else []
 
-    beer_names = []
-    for data in response['data']:
-        beer_names.append(data['name'])
     return beer_names
 
 def make_delivery_request(request):
@@ -24,7 +27,9 @@ def make_delivery_request(request):
         '&section=beer'
     )
 
-    req = request.args
+    req = dict(request.values.items())
+    if req['address'] == 'New York, NY':
+        req['address'] = '1129 E 14th St, New York, NY'
     validate_delivery_request(req)
     resp = requests.get(
         base,
@@ -37,5 +42,8 @@ def make_delivery_request(request):
         return 400
 
 def filter_available_beers(available_beers, filter_to_names):
-    return {'beers': [v for v in available_beers.itervalues() if
-                      v['name'] in filter_to_names]}
+    return {'beers': [
+        v for v in available_beers.itervalues() if
+        any([f.lower() in v['name'].lower()
+             for f in filter_to_names])
+    ]}

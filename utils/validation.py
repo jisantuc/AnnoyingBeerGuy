@@ -7,9 +7,11 @@ def validate_email_address(email_address):
     if not email_re.match(email_address):
         raise ValueError('bad email address passed')
 
-def validate_delivery_request(request):
-    assert 'address' in request
-    assert request['address']
+def validate_delivery_request(requestdata):
+    assert 'address' in requestdata
+    assert requestdata['address']
 
-def validate_beer_request(request):
-    assert 'name' in request or 'abv' in request or 'ibv' in request or 'srmId' in request or 'availabilityId' in request or 'styleId' in request
+def validate_beer_request(requestdata):
+    assert ('name' in requestdata or 'abv' in requestdata or
+            'ibu' in requestdata or 'srmId' in requestdata or
+            'availabilityId' in requestdata or 'styleId' in requestdata)
