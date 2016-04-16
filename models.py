@@ -3,13 +3,13 @@ import datetime as dt
 from sqlalchemy import (create_engine, Column, DateTime, String,
                         Integer, ForeignKey, Boolean)
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship, backref, session_maker
+from sqlalchemy.orm import relationship, backref, sessionmaker
 from utils.validation import validate_email_address
 
 engine = create_engine('sqlite:///annoyingbeerguy.db')
 Base = declarative_base()
 
-Session = session_maker(bind=engine)
+Session = sessionmaker(bind=engine)
 
 
 class User(Base):

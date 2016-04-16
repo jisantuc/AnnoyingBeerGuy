@@ -1,7 +1,7 @@
 import pytest
 import urllib
 import requests
-from ..utils.make_requests import (
+from utils.make_requests import (
     make_delivery_request, filter_available_beers, create_brewerydb_query
 )
 
@@ -24,6 +24,7 @@ def test_get_beers():
 
 def test_create_brewery_db_query():
     request = {'name': 'Naughty 90'}
-    response = create_brewerydb_query(request)
+    response_names = create_brewerydb_query(request)
 
-    assert response['status'] == 'success'
+    assert len(response_names) == 1
+    assert response_names[0] == 'Naughty 90'

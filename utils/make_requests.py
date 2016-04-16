@@ -10,7 +10,12 @@ def create_brewerydb_query(request):
 
     base = 'http://api.brewerydb.com/v2/beers/'
     request.update({'key': os.environ['API_KEY']})
-    return requests.get(base, params=request).json()
+    response = requests.get(base, params=request).json()
+
+    beer_names = []
+    for data in response['data']:
+        beer_names.append(data['name'])
+    return beer_names
 
 def make_delivery_request(request):
     base = (
