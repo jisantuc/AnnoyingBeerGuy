@@ -18,21 +18,21 @@ def make_delivery_request(request):
     base = (
         'https://delivery.com/api/data/search?search_type=alcohol{}'
         '&order_time=ASAP&order_type=delivery&client_id=brewhacks2016'
+        '&section=beer'
     )
 
     validate_delivery_request(request)
-
-    if 'address' in request:
-        query = base.format('&address={}'.format(
-            urllib.quote(request['address'])
-        ))
-    else:
-        query = base.format('&longitude={}&latitude={}'.format(
-            request['longitude'], request['latitude']
-        ))
+    query = base.format('&address={}'.format(
+        urllib.quote(request['address'])
+    ))
 
     return query
 
 def get_available_beers(request):
     query = make_delivery_request(request)
-    return requests.get(query)
+    resp = requests.get(query)
+    return resp.json()['data']['products']
+
+def filter_available_beers(available_beers, filter_to_names):
+    return [v for v in available_beers.itervalues() if
+            v['name'] in filter_to_names]
