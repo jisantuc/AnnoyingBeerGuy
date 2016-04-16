@@ -2,6 +2,7 @@ import os
 import requests
 import datetime as dt
 import urllib
+import json
 from validation import validate_beer_request, validate_delivery_request
 
 def create_brewerydb_query(request):
@@ -18,10 +19,11 @@ def make_delivery_request(request):
         '&section=beer'
     )
 
-    validate_delivery_request(request)
+    req = request.args
+    validate_delivery_request(req)
     resp = requests.get(
         base,
-        {k: request[k] for k in ['address']} #more to add once available
+        {k: req[k] for k in ['address']} #more to add once available
     )
 
     if resp.status_code == 200:
@@ -30,5 +32,5 @@ def make_delivery_request(request):
         return 400
 
 def filter_available_beers(available_beers, filter_to_names):
-   return [v for v in available_beers.itervalues() if
-           v['name'] in filter_to_names]
+    return {'beers': [v for v in available_beers.itervalues() if
+                      v['name'] in filter_to_names]}
