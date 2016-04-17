@@ -71,14 +71,13 @@ def filter_available_beers(available_beers, all_beers):
     orig_len = len(all_beers)
     namelist = [beer['longname'] for beer in all_beers]
     for beer_av in available_beers:
-        name, score = process.extractOne(beer['longname'], namelist)
-        print name, score
-        if score > 80:
+        name, score = process.extractOne(beer_av['longname'], namelist)
+        if score > 70:
             match = [beer for beer in all_beers if beer['longname'] == name][0]
             index = all_beers.index(match)
             match['available'] = True
             match['productId'] = beer_av['product_id']
-            match['merchantId'] = beer_av['merchant_id']
+            match['merchantId'] = beer_av['merchant_ids'][0]
             match['link'] = ('https://delivery.com/api/data/product/'
                              '{}?merchant_id={}&show_description=true'
                              '&client_id=brewhacks2016').format(
