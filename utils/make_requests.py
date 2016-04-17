@@ -3,7 +3,7 @@ import requests
 import datetime as dt
 import urllib
 import json
-from fuzzywuzzy import process
+from fuzzywuzzy import process, fuzz
 from validation import validate_beer_request, validate_delivery_request
 
 def create_brewerydb_query(request):
@@ -66,23 +66,41 @@ def make_delivery_request(request):
     else:
         return {'errors': resp.status_code, message: 'delivery_request_failed'}
 
-def filter_available_beers(available_beers, all_beers):
+def filter_available_beers(available_beers, all_beers, address):
 
+    link_template = (
+        'https://www.delivery.com/search?alcohol&address={}'
+        '&keyword={}'
+    )
     orig_len = len(all_beers)
     namelist = [beer['longname'] for beer in all_beers]
     for beer_av in available_beers:
+        # token set ratio match
+#        name, score = (
+#            sorted([(name, fuzz.token_set_ratio(beer_av['longname'], name))
+#                     for name in namelist], key=lambda x: -x[1])
+#        )[0]
+        # basic match
         name, score = process.extractOne(beer_av['longname'], namelist)
         if score > 70:
+            formatted_address = (
+                address.replace(' ', '%20').replace(',', '%2C')
+                .replace('#', '%23')
+            )
+            formatted_name = (
+                beer_av['name'].replace(' ', '%20').replace(',', '%2C')
+                .replace('#', '%23')
+            )
             match = [beer for beer in all_beers if beer['longname'] == name][0]
             index = all_beers.index(match)
             match['available'] = True
             match['productId'] = beer_av['product_id']
             match['merchantId'] = beer_av['merchant_ids'][0]
-            match['link'] = ('https://delivery.com/api/data/product/'
-                             '{}?merchant_id={}&show_description=true'
-                             '&client_id=brewhacks2016').format(
-                                 match['productId'], match['merchantId']
-                             )
+            match['link'] = link_template.format(
+                formatted_address, formatted_name
+            )
+            match['image'] = beer_av['image']
+            match['categories'] = beer_av['categories']
             all_beers[index] = match
 
     for beer in all_beers:
