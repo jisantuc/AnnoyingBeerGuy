@@ -13,11 +13,6 @@ def get_beers():
     available_beers = make_delivery_request(request)
     acceptable_beers = create_brewerydb_query(request)
 
-    for key, value in available_beers.iteritems():
-        for tags in value['tags']:
-            if isinstance(tags['value'], list):
-                tags['value'] = ", ".join(tags['value'])
-
     return jsonify(
         filter_available_beers(available_beers, acceptable_beers)
     )
