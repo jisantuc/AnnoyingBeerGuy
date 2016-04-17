@@ -5,6 +5,12 @@ from utils.make_requests import (
     make_delivery_request, filter_available_beers, create_brewerydb_query
 )
 
+port = int(os.getenv('VCAP_APP_PORT', 8080))
+if not os.getenv('API_KEY'):
+    os.environ['API_KEY'] = 'YOUR_API_KEY'
+if not os.getenv('SENDGRID_API_KEY'):
+    os.environ['SENGRID_API_KEY'] = 'YOUR_API_KEY'
+
 app = Flask(__name__)
 CORS(app)
 
@@ -38,4 +44,4 @@ def subscribe():
     return ''
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=port, debug=True)
